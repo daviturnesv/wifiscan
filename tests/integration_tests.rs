@@ -8,7 +8,7 @@ fn test_help_output() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("wifiscan"));
@@ -24,7 +24,7 @@ fn test_scan_subcommand_help() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("interface"));
@@ -39,7 +39,7 @@ fn test_monitor_subcommand_help() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("interval"));
@@ -54,7 +54,7 @@ fn test_interfaces_subcommand_help() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
 }
 
@@ -65,7 +65,7 @@ fn test_analyze_subcommand_help() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("duration"));
@@ -79,7 +79,7 @@ fn test_init_subcommand_help() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
 }
 
@@ -90,7 +90,7 @@ fn test_invalid_subcommand() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(!output.status.success());
 }
 
@@ -101,7 +101,7 @@ fn test_version_flag() {
         .current_dir(env!("CARGO_MANIFEST_DIR"))
         .output()
         .expect("Failed to run binary");
-    
+
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("0.1.0"));
