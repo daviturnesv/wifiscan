@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [master, trending/**]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      
+      - name: Run clippy
+        run: cargo clippy -- -D warnings
+      
+      - name: Build
+        run: cargo build --release
+      
+      - name: Run tests
+        run: cargo test
+      
+      - name: Test binary works
+        run: |
+          ./target/release/wifiscan --help
+          ./target/release/wifiscan scan --help
+          ./target/release/wifiscan monitor --help
+          ./target/release/wifiscan analyze --help
+          ./target/release/wifiscan interfaces --help
+          ./target/release/wifiscan info --help
+          ./target/release/wifiscan init --help
+
+  release:
+    needs: build-and-test
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      
+      - name: Build release
+        run: cargo build --release
+      
+      - name: Create release archive
+        run: |
+          tar -czf wifiscan-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz -C target/release wifiscan
+      
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: wifiscan-${{ github.ref_name }}-x86_64-unknown-linux-gnu.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
